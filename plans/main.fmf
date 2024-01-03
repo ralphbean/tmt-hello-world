@@ -1,0 +1,17 @@
+summary: Example of working with Snapshots from RHTAP
+
+prepare:
+  - name: Install packages
+    how: install
+    package:
+      - jq
+
+execute:
+    # Note, the ' character works here because the ${SNAPSHOT} is not a shell
+    # environment variable. it is treated by tmt as a tmt variable which is
+    # injected into the script before it is evaluated by bash.
+    script: |
+        echo "This is where the test script goes."
+        echo '${SNAPSHOT}'
+        echo '${SNAPSHOT}' | jq .foo
+        echo "Yes!"
