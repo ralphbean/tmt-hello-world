@@ -16,10 +16,13 @@ execute:
     script: |
         echo "This is where the test script goes."
 
-        echo "The provided snapshot was: ${SNAPSHOT}"
+        echo "The base64 encoded snapshot is: ${SNAPSHOT}"
+        echo -n "The base64 decoded snapshot is: "
+        echo $SNAPSHOT | base64 -d
+
         echo "It contains the following container images:"
 
-        IMAGES=$(echo '${SNAPSHOT}' | jq -r '.components[].containerImage')
+        IMAGES=$(echo '${SNAPSHOT}' | base64 -d | jq -r '.components[].containerImage')
 
         # Then, perform some check
         for IMAGE in $IMAGES; do
