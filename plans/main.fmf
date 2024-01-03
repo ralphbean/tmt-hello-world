@@ -4,7 +4,10 @@ prepare:
   - name: Install packages
     how: install
     package:
+      # For working with the SNAPSHOT var
       - jq
+      # Just for interacting with the images
+      - podman
 
 execute:
     # Note, the ' character works here because the ${SNAPSHOT} is not a shell
@@ -12,6 +15,13 @@ execute:
     # injected into the script before it is evaluated by bash.
     script: |
         echo "This is where the test script goes."
-        echo '${SNAPSHOT}'
-        echo '${SNAPSHOT}' | jq .foo
-        echo "Yes!"
+
+        echo "The provided snapshot was: ${SNAPSHOT}"
+        echo "It contains the following container images:"
+
+        IMAGES=$(echo '${SNAPSHOT}' | jq -r '.components[].containerImage')
+
+        # Then, perform some check
+        for IMAGE in $IMAGES; do
+            podman run $IMAGE cat /etc/os-release
+        done
